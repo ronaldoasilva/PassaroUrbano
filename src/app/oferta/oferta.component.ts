@@ -1,28 +1,43 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { OfertasService } from './../ofertas.service';
-import { Oferta } from './../shared/oferta.model';
+import { Oferta } from '../shared/oferta.model';
+import { OfertasService } from '../ofertas.service';
+import { CarrinhoService } from '../carrinho.service';
 
 @Component({
   selector: 'app-oferta',
   templateUrl: './oferta.component.html',
   styleUrls: ['./oferta.component.css'],
-  providers: [OfertasService]
+  providers: [ OfertasService]
 })
-export class OfertaComponent implements OnInit {
+export class OfertaComponent implements OnInit, OnDestroy {
 
-  public oferta: Oferta
+  public oferta: Oferta;
 
-  constructor(private route: ActivatedRoute,
-              private ofertaService: OfertasService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private ofertasService: OfertasService,
+    private carrinhoService: CarrinhoService
+  ) { }
 
   ngOnInit() {
 
     this.route.params.subscribe((parametros: Params) => {
-      this.ofertaService.getOfertaPorId(parametros.id)
+
+      this.ofertasService.getOfertaPorId(parametros.id)
       .then(( oferta: Oferta ) => {
-        this.oferta = oferta
-      })
-    })
+        this.oferta = oferta;
+        // console.log(this.oferta)
+      });
+    });
   }
+
+  ngOnDestroy() {
+  }
+
+  public adicionarItemCarrinho(): void {
+    console.log(this.oferta);
+      this.carrinhoService.incluirItem(this.oferta);
+  }
+
 }
